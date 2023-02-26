@@ -65,6 +65,7 @@ class Robot : public frc::TimedRobot {
     if (m_controller.GetYButtonReleased()) {m_elevator.Set(0);}
     if ((elevator_switch_upper.Get())) {m_elevator.Set(0);}
 
+    // Lower
     if (m_controller.GetAButtonPressed() && (!elevator_switch_lower.Get())) {m_elevator.Set(-1);}
     if (m_controller.GetAButtonReleased()) {m_elevator.Set(0);}
     if ((elevator_switch_lower.Get())) {m_elevator.Set(0);}
