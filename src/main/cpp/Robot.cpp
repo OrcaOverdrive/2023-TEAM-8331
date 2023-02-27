@@ -1,4 +1,3 @@
-
 #include <frc/TimedRobot.h>
 #include <frc/Timer.h>
 #include <frc/XboxController.h>
@@ -9,30 +8,25 @@
 #include "rev/CANSparkMax.h"
 #include "rev/SparkMaxPIDController.h"
 #include <frc/DigitalInput.h>
+#include <frc/AnalogInput.h>
+#include <iostream>
 
 
 class Robot : public frc::TimedRobot {
  public:
   Robot() {
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
+    // Drivetrain
     m_left.SetInverted(true);
     m_robotDrive.SetExpiration(100_ms);
 
-
-
-
+    //PNEUMATICS
     pcmCompressor.EnableDigital();
-    //pcmCompressor.Disable();
     //Initialize DoubleSolonoid so it knows where to start.
     DoublePCM.Set(frc::DoubleSolenoid::Value::kForward);
 
     m_timer.Start();
   }
   
-  
-
   void AutonomousInit() override {
     m_timer.Reset();
     m_timer.Start();
@@ -56,20 +50,28 @@ class Robot : public frc::TimedRobot {
     m_robotDrive.ArcadeDrive(-m_controller.GetLeftY()*0.75,
                              m_controller.GetRightX()*0.65);
 
-    // if y button pressed, toggle doubele solenoid
+    // if x button pressed, toggle doubele solenoid
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
 
 
-    // elevator up and down
+    // elevator up
     if (m_controller.GetYButtonPressed() && (!elevator_switch_upper.Get())) {m_elevator.Set(1);}
     if (m_controller.GetYButtonReleased()) {m_elevator.Set(0);}
-    if ((elevator_switch_upper.Get())) {m_elevator.Set(0);}
 
-    // Lower
+    //stop moving when hits upper switch
+    if (elevator_switch_upper.Get() && (m_elevator.Get() > 0)) {
+      m_elevator.Set(0);
+    }
+
+    //elevator down
     if (m_controller.GetAButtonPressed() && (!elevator_switch_lower.Get())) {m_elevator.Set(-1);}
     if (m_controller.GetAButtonReleased()) {m_elevator.Set(0);}
-    if ((elevator_switch_lower.Get())) {m_elevator.Set(0);}
-    
+
+    //stop moving when hits lower switch
+        if (elevator_switch_lower.Get() && (m_elevator.Get() < 0)) {
+      m_elevator.Set(0);
+    }
+
     // Arm up and down
     if (m_controller.GetPOV() == 0) {m_arm.Set(0.2);}
     if (m_controller.GetPOV() == 180) {m_arm.Set(-0.2);}
@@ -87,12 +89,12 @@ class Robot : public frc::TimedRobot {
   frc::PWMSparkMax m_right{1};
   frc::DifferentialDrive m_robotDrive{m_left, m_right};  
 
+  // controller
   frc::XboxController m_controller{0};
-  frc::Timer m_timer;
 
-  //Switch lower true if hit false if not
+  //Switch lower 
   frc::DigitalInput elevator_switch_lower{0};
-  //Switch upper true if hit false if not
+  //Switch upper
   frc::DigitalInput elevator_switch_upper{1};
 
   //CANbus elevator
@@ -103,12 +105,14 @@ class Robot : public frc::TimedRobot {
 
   //pneumatics
   frc::Compressor pcmCompressor{0, frc::PneumaticsModuleType::CTREPCM};
-  bool enabled = pcmCompressor.Enabled();
   bool pressureSwitch = pcmCompressor.GetPressureSwitchValue();
   double current = (double) pcmCompressor.GetCurrent();
 
   // Double Solenoid, 0, 1 - ports
   frc::DoubleSolenoid DoublePCM{frc::PneumaticsModuleType::CTREPCM, 0, 1};
+
+  //timers
+  frc::Timer m_timer;
 };
 
 #ifndef RUNNING_FRC_TESTS
