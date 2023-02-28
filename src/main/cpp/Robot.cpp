@@ -57,11 +57,11 @@ class Robot : public frc::TimedRobot {
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
 
  // elevator up
-    if (m_controller.GetYButtonPressed() && (!elevator_switch_upper.Get())) {m_elevator.Set(1);}
+    if (m_controller.GetYButtonPressed() && (elevator_switch_upper.Get())) {m_elevator.Set(1);}
     if (m_controller.GetYButtonReleased()) {m_elevator.Set(0);}
 
     //stop moving when hits upper switch
-    if (elevator_switch_upper.Get() && (m_elevator.Get() > 0)) {
+    if (!elevator_switch_upper.Get() && (m_elevator.Get() > 0)) {
       m_elevator.Set(0);
     }
 
