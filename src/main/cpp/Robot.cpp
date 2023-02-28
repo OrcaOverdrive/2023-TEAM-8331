@@ -107,7 +107,7 @@ class Robot : public frc::TimedRobot {
   rev::CANSparkMax m_elevator{21, rev::CANSparkMax::MotorType::kBrushless};
 
   //CANbus arm
-  rev::CANSparkMax m_arm{24, rev::CANSparkMax::MotorType::kBrushed};
+  rev::CANSparkMax m_arm{24, rev::CANSparkMax::MotorType::kBrushless};
 
   //pneumatics
   frc::Compressor pcmCompressor{0, frc::PneumaticsModuleType::CTREPCM};
