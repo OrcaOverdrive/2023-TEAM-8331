@@ -11,12 +11,17 @@
 #include <frc/AnalogInput.h>
 #include <iostream>
 
+#include "cameraserver/CameraServer.h"
+ 
+//frc::CameraServer::StartAutomaticCapture{};
+//cs::CvSink cvSink = frc::CameraServer::GetVideo();
+//cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur",640,480); 
 
 class Robot : public frc::TimedRobot {
  public:
   Robot() {
     // Drivetrain
-    m_left.SetInverted(true);
+    m_right.SetInverted(true);
     m_robotDrive.SetExpiration(100_ms);
 
     //PNEUMATICS
@@ -25,6 +30,10 @@ class Robot : public frc::TimedRobot {
     DoublePCM.Set(frc::DoubleSolenoid::Value::kForward);
 
     m_timer.Start();
+  }
+
+  void RobotInit() override {
+    frc::CameraServer::StartAutomaticCapture();
   }
   
   void AutonomousInit() override {
@@ -49,8 +58,12 @@ class Robot : public frc::TimedRobot {
     // Drive with arcade style (use right stick to steer)s
     double leftspeed = -m_controller.GetLeftY();
     double rightspeed = -m_controller.GetRightY();
-    m_left.Set(leftspeed);
-    m_right.Set(rightspeed);
+    if(m_controller.GetBackButtonPressed()){
+      if(speedfactor==1)speedfactor=0.5;
+      else speedfactor=1;
+    }
+    m_left.Set(leftspeed*speedfactor);
+    m_right.Set(rightspeed*speedfactor);
 
     // if x button pressed, toggle doubele solenoid
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
@@ -77,8 +90,8 @@ class Robot : public frc::TimedRobot {
 
 
     // Arm up and down
-    if (m_controller.GetPOV() == 0) {m_arm.Set(0.2);}
-    if (m_controller.GetPOV() == 180) {m_arm.Set(-0.2);}
+    if (m_controller.GetPOV() == 0) {m_arm.Set(0.5);}
+    if (m_controller.GetPOV() == 180) {m_arm.Set(-0.5);}
     if (m_controller.GetPOV() == -1) {m_arm.Set(0);}
 
     if (m_controller.GetBButtonPressed()) {m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);}
@@ -91,9 +104,11 @@ class Robot : public frc::TimedRobot {
 
  private:
   // Robot drive system
-  frc::PWMSparkMax m_left{0};
-  frc::PWMSparkMax m_right{1};
+  frc::PWMSparkMax m_left{1};
+  frc::PWMSparkMax m_right{0};
   frc::DifferentialDrive m_robotDrive{m_left, m_right};  
+
+  double speedfactor=1;
 
   // controller
   frc::XboxController m_controller{0};
