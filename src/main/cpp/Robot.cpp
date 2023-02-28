@@ -46,15 +46,17 @@ class Robot : public frc::TimedRobot {
   void TeleopInit() override {}
 
   void TeleopPeriodic() override {
-    // Drive with arcade style (use right stick to steer)
-    m_robotDrive.ArcadeDrive(-m_controller.GetLeftY()*0.75,
-                             m_controller.GetRightX()*0.65);
+    // Drive with arcade style (use right stick to steer)s
+    double leftspeed = -m_controller.GetLeftY();
+    double rightspeed = -m_controller.GetRightY();
+    std::cout << "left speed" << leftspeed << std::endl;
+    m_left.Set(leftspeed);
+    m_right.Set(rightspeed);
 
     // if x button pressed, toggle doubele solenoid
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
 
-
-    // elevator up
+ // elevator up
     if (m_controller.GetYButtonPressed() && (!elevator_switch_upper.Get())) {m_elevator.Set(1);}
     if (m_controller.GetYButtonReleased()) {m_elevator.Set(0);}
 
@@ -71,6 +73,7 @@ class Robot : public frc::TimedRobot {
         if (elevator_switch_lower.Get() && (m_elevator.Get() < 0)) {
       m_elevator.Set(0);
     }
+
 
     // Arm up and down
     if (m_controller.GetPOV() == 0) {m_arm.Set(0.2);}
