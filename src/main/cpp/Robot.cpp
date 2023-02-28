@@ -75,7 +75,6 @@ class Robot : public frc::TimedRobot {
     //stop moving when hits upper switch
     if (!elevator_switch_upper.Get() && (m_elevator.Get() > 0)) {
       m_elevator.Set(0);
-      m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);
       }
 
     //elevator down
@@ -85,7 +84,6 @@ class Robot : public frc::TimedRobot {
     //stop moving when hits lower switch
         if (elevator_switch_lower.Get() && (m_elevator.Get() < 0)) 
         {m_elevator.Set(0);
-        m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);
         } 
 
 
@@ -93,8 +91,6 @@ class Robot : public frc::TimedRobot {
     if (m_controller.GetPOV() == 0) {m_arm.Set(0.5);}
     if (m_controller.GetPOV() == 180) {m_arm.Set(-0.5);}
     if (m_controller.GetPOV() == -1) {m_arm.Set(0);}
-
-    if (m_controller.GetBButtonPressed()) {m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);}
 
   }
 
