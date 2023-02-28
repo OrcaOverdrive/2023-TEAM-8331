@@ -49,7 +49,6 @@ class Robot : public frc::TimedRobot {
     // Drive with arcade style (use right stick to steer)s
     double leftspeed = -m_controller.GetLeftY();
     double rightspeed = -m_controller.GetRightY();
-    std::cout << "left speed" << leftspeed << std::endl;
     m_left.Set(leftspeed);
     m_right.Set(rightspeed);
 
@@ -63,16 +62,18 @@ class Robot : public frc::TimedRobot {
     //stop moving when hits upper switch
     if (!elevator_switch_upper.Get() && (m_elevator.Get() > 0)) {
       m_elevator.Set(0);
-    }
+      m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);
+      }
 
     //elevator down
     if (m_controller.GetAButtonPressed() && (!elevator_switch_lower.Get())) {m_elevator.Set(-1);}
     if (m_controller.GetAButtonReleased()) {m_elevator.Set(0);}
 
     //stop moving when hits lower switch
-        if (elevator_switch_lower.Get() && (m_elevator.Get() < 0)) {
-      m_elevator.Set(0);
-    }
+        if (elevator_switch_lower.Get() && (m_elevator.Get() < 0)) 
+        {m_elevator.Set(0);
+        m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);
+        } 
 
 
     // Arm up and down
