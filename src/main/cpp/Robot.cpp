@@ -81,6 +81,8 @@ class Robot : public frc::TimedRobot {
     if (m_controller.GetPOV() == 180) {m_arm.Set(-0.2);}
     if (m_controller.GetPOV() == -1) {m_arm.Set(0);}
 
+    if (m_controller.GetBButtonPressed()) {m_controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 1.0);}
+
   }
 
   void TestInit() override {}
