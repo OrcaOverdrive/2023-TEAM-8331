@@ -11,6 +11,8 @@
 #include <frc/AnalogInput.h>
 #include <iostream>
 #include "cameraserver/CameraServer.h"
+#include <frc/motorcontrol/Spark.h>
+
  
 //frc::CameraServer::StartAutomaticCapture{};
 //cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -21,6 +23,7 @@ class Robot : public frc::TimedRobot {
   Robot() {
     // Drivetrain
     m_right.SetInverted(true);
+    m_right2.SetInverted(true);
     m_robotDrive.SetExpiration(100_ms);
 
     //PNEUMATICS
@@ -41,13 +44,25 @@ class Robot : public frc::TimedRobot {
   }
 
   void AutonomousPeriodic() override {
-    // Drive for 2 seconds
+    // Drive Backwards and puts arm down
     if (m_timer.Get() < 2_s) {
-      // Drive forwards half speed, make sure to turn input squaring off
-      m_robotDrive.ArcadeDrive(0.5, 0.0, false);
-    } else {
+      m_robotDrive.ArcadeDrive(-0.5, 0.0, false);
+      m_arm.Set(-0.5);
+
+    } else if (m_timer.Get() > 2_s && m_timer.Get() < 3_s){
       // Stop robot
       m_robotDrive.ArcadeDrive(0.0, 0.0, false);
+      m_arm.Set(0);
+    }
+
+    // Drive forwards and lift claw up.
+    if (m_timer.Get() < 3_s && m_timer.Get() > 7.5_s) {
+      m_robotDrive.ArcadeDrive(0.5, 0.0, false);
+      m_elevator.Set(1);
+
+
+    } else if (m_timer.Get() > 5_s) {
+      m_robotDrive.ArcadeDrive(0, 0., false);
     }
   }
 
@@ -65,7 +80,9 @@ class Robot : public frc::TimedRobot {
     double rightspeed = -m_controller.GetRightY();
 
     m_left.Set(leftspeed*speedfactor);
+    m_left2.Set(leftspeed*speedfactor);
     m_right.Set(rightspeed*speedfactor);
+    m_right2.Set(rightspeed*speedfactor);
 
     // if x button pressed, toggle doubele solenoid
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
@@ -102,8 +119,10 @@ class Robot : public frc::TimedRobot {
 
  private:
   // Robot drive system
-  frc::PWMSparkMax m_left{1};
-  frc::PWMSparkMax m_right{0};
+  frc::Spark m_left{1};
+  frc::Spark m_right{0};
+  frc::Spark m_right2{2};
+  frc::Spark m_left2{3};
   frc::DifferentialDrive m_robotDrive{m_left, m_right};  
 
   double speedfactor=1;
