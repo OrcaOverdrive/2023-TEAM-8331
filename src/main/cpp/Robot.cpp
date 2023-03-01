@@ -58,7 +58,7 @@ class Robot : public frc::TimedRobot {
     if(m_controller.GetBackButtonPressed()){
       if(speedfactor==1)speedfactor=0.5;
       else speedfactor=1;
-    }
+    } 
 
     // Drive with tank style
     double leftspeed = -m_controller.GetLeftY();
