@@ -32,11 +32,6 @@ class MotorGroup {
   frc::Spark& motor4_;
 };
 
- 
-//frc::CameraServer::StartAutomaticCapture{};
-//cs::CvSink cvSink = frc::CameraServer::GetVideo();
-//cs::CvSource outputStream = frc::CameraServer::PutVideo("Blur",640,480); 
-
 class Robot : public frc::TimedRobot {
  public:
   Robot() {
@@ -61,28 +56,24 @@ class Robot : public frc::TimedRobot {
     m_timer.Reset();
     m_timer.Start();
   }
-
+    
+    // AUTONOMOUS
   void AutonomousPeriodic() override {
+   
     // Drive Backwards and puts arm down
-    if (m_timer.Get() < 2_s) {
-      m_robotDrive.ArcadeDrive(-0.5, 0.0, false);
-      m_arm.Set(-0.5);
+    if (m_timer.Get() < 4.5_s) {
+      motor_group.SetSpeeds(0.5, 0.5);
+      //m_arm.Set(-0.5);
 
-    } else if (m_timer.Get() > 2_s && m_timer.Get() < 3_s){
+    } else if (m_timer.Get() > 4.5_s && m_timer.Get() < 5_s){
+     
       // Stop robot
-      m_robotDrive.ArcadeDrive(0.0, 0.0, false);
-      m_arm.Set(0);
+      motor_group.SetSpeeds(0.0, 0.0);
+      //m_arm.Set(0);
     }
 
     // Drive forwards and lift claw up.
-    if (m_timer.Get() < 3_s && m_timer.Get() > 7.5_s) {
-      m_robotDrive.ArcadeDrive(0.5, 0.0, false);
-      m_elevator.Set(1);
 
-
-    } else if (m_timer.Get() > 5_s) {
-      m_robotDrive.ArcadeDrive(0, 0., false);
-    }
   }
 
   void TeleopInit() override {}
@@ -98,10 +89,6 @@ class Robot : public frc::TimedRobot {
     double leftspeed = -m_controller.GetLeftY();
     double rightspeed = -m_controller.GetRightY();
 
-    // m_left.Set(leftspeed*speedfactor);
-    // m_left2.Set(leftspeed*speedfactor);
-    // m_right.Set(rightspeed*speedfactor);
-    // m_right2.Set(rightspeed*speedfactor);
     motor_group.SetSpeeds(leftspeed*speedfactor, rightspeed*speedfactor);
 
 
