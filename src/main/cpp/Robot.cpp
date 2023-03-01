@@ -13,6 +13,25 @@
 #include "cameraserver/CameraServer.h"
 #include <frc/motorcontrol/Spark.h>
 
+class MotorGroup {
+ public:
+  MotorGroup(frc::Spark& motor1, frc::Spark& motor2, frc::Spark& motor3, frc::Spark& motor4)
+      : motor1_(motor1), motor2_(motor2), motor3_(motor3), motor4_(motor4) {}
+
+  void SetSpeeds(double left_speed, double right_speed) {
+    motor1_.Set(left_speed);
+    motor2_.Set(left_speed);
+    motor3_.Set(right_speed);
+    motor4_.Set(right_speed);
+  }
+
+ private:
+  frc::Spark& motor1_;
+  frc::Spark& motor2_;
+  frc::Spark& motor3_;
+  frc::Spark& motor4_;
+};
+
  
 //frc::CameraServer::StartAutomaticCapture{};
 //cs::CvSink cvSink = frc::CameraServer::GetVideo();
@@ -70,7 +89,7 @@ class Robot : public frc::TimedRobot {
 
   void TeleopPeriodic() override {
     // change speed to 50%
-    if(m_controller.GetBackButtonPressed()){
+    if(m_controller.GetBButtonPressed()){
       if(speedfactor==1)speedfactor=0.5;
       else speedfactor=1;
     } 
@@ -79,10 +98,12 @@ class Robot : public frc::TimedRobot {
     double leftspeed = -m_controller.GetLeftY();
     double rightspeed = -m_controller.GetRightY();
 
-    m_left.Set(leftspeed*speedfactor);
-    m_left2.Set(leftspeed*speedfactor);
-    m_right.Set(rightspeed*speedfactor);
-    m_right2.Set(rightspeed*speedfactor);
+    // m_left.Set(leftspeed*speedfactor);
+    // m_left2.Set(leftspeed*speedfactor);
+    // m_right.Set(rightspeed*speedfactor);
+    // m_right2.Set(rightspeed*speedfactor);
+    motor_group.SetSpeeds(leftspeed*speedfactor, rightspeed*speedfactor);
+
 
     // if x button pressed, toggle doubele solenoid
     if (m_controller.GetXButtonPressed()) {DoublePCM.Toggle();}
@@ -123,6 +144,7 @@ class Robot : public frc::TimedRobot {
   frc::Spark m_right{0};
   frc::Spark m_right2{2};
   frc::Spark m_left2{3};
+  MotorGroup motor_group{m_left, m_left2, m_right, m_right2};
   frc::DifferentialDrive m_robotDrive{m_left, m_right};  
 
   double speedfactor=1;
