@@ -10,7 +10,6 @@
 #include <frc/DigitalInput.h>
 #include <frc/AnalogInput.h>
 #include <iostream>
-
 #include "cameraserver/CameraServer.h"
  
 //frc::CameraServer::StartAutomaticCapture{};
@@ -55,13 +54,16 @@ class Robot : public frc::TimedRobot {
   void TeleopInit() override {}
 
   void TeleopPeriodic() override {
-    // Drive with arcade style (use right stick to steer)s
-    double leftspeed = -m_controller.GetLeftY();
-    double rightspeed = -m_controller.GetRightY();
+    // change speed to 50%
     if(m_controller.GetBackButtonPressed()){
       if(speedfactor==1)speedfactor=0.5;
       else speedfactor=1;
     }
+
+    // Drive with tank style
+    double leftspeed = -m_controller.GetLeftY();
+    double rightspeed = -m_controller.GetRightY();
+
     m_left.Set(leftspeed*speedfactor);
     m_right.Set(rightspeed*speedfactor);
 
