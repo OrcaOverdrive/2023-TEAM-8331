@@ -57,22 +57,37 @@ class Robot : public frc::TimedRobot {
     m_timer.Start();
   }
     
-    // AUTONOMOUS test
+    // AUTONOMOUS 
   void AutonomousPeriodic() override {
    
-    // Drive Backwards and puts arm down
-    if (m_timer.Get() < 4.5_s) {
-      motor_group.SetSpeeds(0.5, 0.5);
-      //m_arm.Set(-0.5);
+    // lower Arm
+    if (m_timer.Get() < 1.5_s) {
+      m_arm.Set(-1);
 
-    } else if (m_timer.Get() > 4.5_s && m_timer.Get() < 5_s){
-     
-      // Stop robot
-      motor_group.SetSpeeds(0.0, 0.0);
-      //m_arm.Set(0);
+    } else if (m_timer.Get() > 1.5_s && m_timer.Get() < 1.6_s) {
+        // Stop robot
+        m_arm.Set(0);
+        if (pneumaticcount == 0){
+          DoublePCM.Set(frc::DoubleSolenoid::Value::kReverse);
+          pneumaticcount += 1;
+      }
     }
 
-    // Drive forwards and lift claw up.
+      // raise elevator to 44 inch
+    if (m_timer.Get() > 1.6_s && m_timer.Get() < 5.6_s){
+        m_elevator.Set(1);
+    } else{
+      m_elevator.Set(0);
+    }
+
+    // drive back
+    if (m_timer.Get() > 5.7_s && m_timer.Get() < 7.6_s){
+        motor_group.SetSpeeds(-0.5, -0.5);
+    } else{
+      motor_group.SetSpeeds(0, 0);
+    }
+
+
 
   }
 
@@ -84,7 +99,9 @@ class Robot : public frc::TimedRobot {
       if(speedfactor==1)speedfactor=0.5;
       else speedfactor=1;
     } 
-
+    if (m_controller.GetBackButtonPressed()); {motor_group.SetSpeeds(0.1, 0.1);}
+    if (m_controller.GetBackButtonReleased()); {motor_group.SetSpeeds(0.0, 0.0);}
+    
     // Drive with tank style
     double leftspeed = -m_controller.GetLeftY();
     double rightspeed = -m_controller.GetRightY();
@@ -115,8 +132,8 @@ class Robot : public frc::TimedRobot {
 
 
     // Arm up and down
-    if (m_controller.GetPOV() == 0) {m_arm.Set(0.5);}
-    if (m_controller.GetPOV() == 180) {m_arm.Set(-0.5);}
+    if (m_controller.GetPOV() == 0) {m_arm.Set(1);}
+    if (m_controller.GetPOV() == 180) {m_arm.Set(-1);}
     if (m_controller.GetPOV() == -1) {m_arm.Set(0);}
 
   }
@@ -160,6 +177,8 @@ class Robot : public frc::TimedRobot {
 
   //timers
   frc::Timer m_timer;
+
+  int pneumaticcount = 0;
 };
 
 #ifndef RUNNING_FRC_TESTS
